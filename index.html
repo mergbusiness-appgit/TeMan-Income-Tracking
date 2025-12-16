@@ -5,6 +5,10 @@
   <title>TeMan Wellness – Commission</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
+
+  <!-- PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -12,83 +16,81 @@
   <h1>💆 TeMan Wellness</h1>
   <p class="subtitle">Commission Calculator</p>
 
-  <!-- Input Card -->
+  <!-- INPUT -->
   <div class="card">
     <label>Service Type</label>
-    <select id="serviceType" onchange="resetPackageOptions()">
+    <select id="serviceType">
       <option value="0.35">Center (35%)</option>
       <option value="0.50">Home Service (50%)</option>
     </select>
 
     <label>Date</label>
-    <input type="date" id="date" />
+    <input type="date" id="date">
 
     <label>Package / Customer Paid (RM)</label>
     <select id="packageSelect" onchange="packageChange()">
       <optgroup label="Center">
-        <option value="150">60 minutes / RM 150</option>
-        <option value="210">90 minutes / RM 210</option>
-        <option value="250">120 minutes / RM 250</option>
-        <option value="220">60 mins massage + 30 mins / RM 220</option>
-        <option value="260">90 mins massage + 30 mins / RM 260</option>
-        <option value="300">120 mins massage + 30 mins / RM 300</option>
-        <option value="280">60 mins + 30 + 30 / RM 280</option>
-        <option value="320">90 mins + 30 + 30 / RM 320</option>
-        <option value="360">120 mins + 30 + 30 / RM 360</option>
+        <option value="150">60 min / RM150</option>
+        <option value="210">90 min / RM210</option>
+        <option value="250">120 min / RM250</option>
+        <option value="220">60 + 30 / RM220</option>
+        <option value="260">90 + 30 / RM260</option>
+        <option value="300">120 + 30 / RM300</option>
+        <option value="280">60 + 30 + 30 / RM280</option>
+        <option value="320">90 + 30 + 30 / RM320</option>
+        <option value="360">120 + 30 + 30 / RM360</option>
       </optgroup>
       <optgroup label="Home Service">
-        <option value="150">60 minutes / RM 150</option>
-        <option value="220">90 minutes / RM 220</option>
-        <option value="280">120 minutes / RM 280</option>
+        <option value="150">60 min / RM150</option>
+        <option value="220">90 min / RM220</option>
+        <option value="280">120 min / RM280</option>
       </optgroup>
       <option value="other">Others</option>
     </select>
 
-    <div id="otherPriceContainer" style="display:none;">
-      <input type="number" id="otherPrice" placeholder="Enter custom price RM" />
+    <div id="otherPriceBox" style="display:none">
+      <input type="number" id="otherPrice" placeholder="Enter custom price RM">
     </div>
 
-    <button onclick="addCommission()">Add Session</button>
+    <button onclick="addSession()">Add Session</button>
   </div>
 
-  <!-- Sessions Card -->
+  <!-- SESSIONS -->
   <div class="card">
-    <h3>📋 Sessions (Scroll)</h3>
-
-    <div class="sessions-wrapper">
-      <ul id="list"></ul>
-    </div>
+    <h3>📋 Sessions</h3>
+    <ul id="sessionList" class="scroll-list"></ul>
   </div>
 
-  <!-- Total by Date -->
+  <!-- TOTAL BY DATE -->
   <div class="card total">
-    <h2>View Total by Date</h2>
-    <input type="date" id="filterDate" />
+    <h2>Total by Date</h2>
+    <input type="date" id="filterDate">
     <p>RM <span id="totalByDate">0.00</span></p>
   </div>
 
-  <!-- 2-Week Period -->
+  <!-- 2 WEEK -->
   <div class="card total">
     <h2>Total by 2-Week Period</h2>
-    <input type="month" id="filterMonth" />
+    <input type="month" id="filterMonth">
     <select id="filterPeriod">
-      <option value="1">1-14</option>
-      <option value="2">15-End</option>
+      <option value="1">1 – 14</option>
+      <option value="2">15 – End</option>
     </select>
     <p>RM <span id="totalByPeriod">0.00</span></p>
+    <button onclick="exportPDF()">📄 Export Salary PDF</button>
   </div>
 
-  <!-- Monthly -->
+  <!-- MONTH -->
   <div class="card total">
     <h2>Total Salary by Month</h2>
-    <input type="month" id="filterSalaryMonth" />
-    <p>RM <span id="totalSalaryByMonth">0.00</span></p>
+    <input type="month" id="filterSalaryMonth">
+    <p>RM <span id="totalByMonth">0.00</span></p>
   </div>
 
-  <!-- Total -->
+  <!-- OVERALL -->
   <div class="card total">
     <h2>Total Commission</h2>
-    <p id="total">RM 0.00</p>
+    <p id="grandTotal">RM 0.00</p>
   </div>
 </div>
 
