@@ -1,8 +1,17 @@
 // Load sessions from LocalStorage
 let sessions = JSON.parse(localStorage.getItem("sessions")) || [];
 
-// Auto-set today’s date
+// Auto-set today's date in add session
 document.getElementById("date").valueAsDate = new Date();
+
+// Auto-set default values for filters
+const today = new Date();
+document.getElementById("filterDate").valueAsDate = today;
+document.getElementById("filterMonth").value = today.toISOString().slice(0,7);
+document.getElementById("filterSalaryMonth").value = today.toISOString().slice(0,7);
+
+// Auto-set 2-week period based on today
+document.getElementById("filterPeriod").value = (today.getDate() <= 14) ? "1" : "2";
 
 // Add new commission session
 function addCommission() {
@@ -26,7 +35,7 @@ function addCommission() {
   render();
 }
 
-// Render session list and total
+// Render sessions and update all totals
 function render() {
   const list = document.getElementById("list");
   const totalEl = document.getElementById("total");
@@ -50,6 +59,7 @@ function render() {
 
   totalEl.textContent = `RM ${total.toFixed(2)}`;
 
+  // Update all totals
   updateTotalByDate();
   updateTotalByPeriod();
   updateTotalSalaryByMonth();
@@ -67,7 +77,7 @@ function updateTotalByDate() {
 }
 
 // ----------------------
-// Total by 2-week period (based on selected month)
+// Total by 2-week period (month-based)
 document.getElementById("filterMonth").addEventListener("change", updateTotalByPeriod);
 document.getElementById("filterPeriod").addEventListener("change", updateTotalByPeriod);
 
@@ -89,8 +99,7 @@ function updateTotalByPeriod() {
     })
     .filter(s => {
       const day = new Date(s.date).getDate();
-      if(period === "1") return day >=1 && day <=14;
-      return day >=15;
+      return period === "1" ? day <= 14 : day >= 15;
     })
     .reduce((sum, s) => sum + s.commission, 0);
 
