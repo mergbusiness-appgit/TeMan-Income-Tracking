@@ -27,6 +27,7 @@ const packageSelectEl = document.getElementById("packageSelect");
 const dateEl = document.getElementById("date");
 const otherPriceContainer = document.getElementById("otherPriceContainer");
 const otherPriceEl = document.getElementById("otherPrice");
+const packageLabelEl = document.getElementById("packageLabel");
 
 // Auto-set today's date
 dateEl.valueAsDate = new Date();
@@ -38,28 +39,41 @@ document.getElementById("filterPeriod").value = (today.getDate() <= 14) ? "1" : 
 
 // ---------- Functions ----------
 
-// Populate packages dynamically
+// Populate packages dynamically with colors
 function populatePackages() {
   const type = serviceTypeEl.value;
   packageSelectEl.innerHTML = "";
-  const list = type === "0.35" ? packages.center : packages.home;
+
+  let list, color;
+  if (type === "0.35") {
+    list = packages.center;
+    color = "#d1e7dd"; // light green
+  } else {
+    list = packages.home;
+    color = "#ffe5d9"; // light orange
+  }
+
   list.forEach(p => {
     const option = document.createElement("option");
     option.value = p.price;
     option.textContent = p.name;
+    option.style.backgroundColor = color;
     packageSelectEl.appendChild(option);
   });
 
   const other = document.createElement("option");
   other.value = "other";
   other.textContent = "Others";
+  other.style.backgroundColor = "#f8d7da"; // light red
   packageSelectEl.appendChild(other);
+
+  packageLabelEl.textContent = `Package / Customer Paid (RM) – ${type==="0.35"?"Center":"Home Service"}`;
 
   otherPriceContainer.style.display = "none";
   otherPriceEl.value = "";
 }
 
-// Show/hide custom price
+// Show/hide custom price input
 function packageChange() {
   if(packageSelectEl.value === "other") {
     otherPriceContainer.style.display = "block";
@@ -193,9 +207,3 @@ function updateTotalSalaryByMonth(){
     const d = new Date(s.date);
     return d.getFullYear()===year && (d.getMonth()+1)===mon;
   }).reduce((sum,s)=>sum+s.commission,0);
-  document.getElementById("totalSalaryByMonth").textContent = total.toFixed(2);
-}
-
-// ---------- Init ----------
-populatePackages();
-render();
