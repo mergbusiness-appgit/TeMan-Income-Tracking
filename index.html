@@ -24,9 +24,12 @@
     <input type="date" id="date" />
 
     <label id="packageLabel">Package / Customer Paid (RM) – Center</label>
-    <select id="packageSelect" onchange="packageChange()">
-      <!-- dynamically populated -->
-    </select>
+
+    <!-- Custom Dropdown -->
+    <div class="custom-dropdown" id="customDropdown">
+      <div class="selected" id="selectedPackage">Select Package</div>
+      <div class="options" id="packageOptions"></div>
+    </div>
 
     <div id="otherPriceContainer" style="display:none; margin-top:8px;">
       <input type="number" id="otherPrice" placeholder="Enter custom price RM" />
