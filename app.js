@@ -23,13 +23,14 @@ let editIndex = null;
 
 // ---------- DOM Elements ----------
 const serviceTypeEl = document.getElementById("serviceType");
-const packageSelectEl = document.getElementById("packageSelect");
 const dateEl = document.getElementById("date");
 const otherPriceContainer = document.getElementById("otherPriceContainer");
 const otherPriceEl = document.getElementById("otherPrice");
 const packageLabelEl = document.getElementById("packageLabel");
+const selectedPackage = document.getElementById("selectedPackage");
+const packageOptions = document.getElementById("packageOptions");
 
-// Auto-set today's date
+// ---------- Auto-set today's date ----------
 dateEl.valueAsDate = new Date();
 const today = new Date();
 document.getElementById("filterDate").valueAsDate = today;
@@ -39,52 +40,69 @@ document.getElementById("filterPeriod").value = (today.getDate() <= 14) ? "1" : 
 
 // ---------- Functions ----------
 
-// Populate packages dynamically with colors
 function populatePackages() {
   const type = serviceTypeEl.value;
-  packageSelectEl.innerHTML = "";
+  packageOptions.innerHTML = "";
 
-  let list, color;
-  if (type === "0.35") {
+  let list, className;
+  if(type === "0.35") {
     list = packages.center;
-    color = "#d1e7dd"; // light green
+    className = "center";
   } else {
     list = packages.home;
-    color = "#ffe5d9"; // light orange
+    className = "home";
   }
 
   list.forEach(p => {
-    const option = document.createElement("option");
-    option.value = p.price;
-    option.textContent = p.name;
-    option.style.backgroundColor = color;
-    packageSelectEl.appendChild(option);
+    const div = document.createElement("div");
+    div.className = `option ${className}`;
+    div.textContent = p.name;
+    div.dataset.price = p.price;
+    div.onclick = () => selectPackage(p.price, p.name);
+    packageOptions.appendChild(div);
   });
 
-  const other = document.createElement("option");
-  other.value = "other";
+  const other = document.createElement("div");
+  other.className = "option other";
   other.textContent = "Others";
-  other.style.backgroundColor = "#f8d7da"; // light red
-  packageSelectEl.appendChild(other);
+  other.dataset.price = "other";
+  other.onclick = () => selectPackage("other", "Others");
+  packageOptions.appendChild(other);
 
+  selectedPackage.textContent = "Select Package";
   packageLabelEl.textContent = `Package / Customer Paid (RM) – ${type==="0.35"?"Center":"Home Service"}`;
-
   otherPriceContainer.style.display = "none";
   otherPriceEl.value = "";
 }
 
-// Show/hide custom price input
-function packageChange() {
-  if(packageSelectEl.value === "other") {
+// Select package
+function selectPackage(price, name) {
+  selectedPackage.textContent = name;
+  selectedPackage.dataset.price = price;
+  packageOptions.style.display = "none";
+  if(price === "other") {
     otherPriceContainer.style.display = "block";
   } else {
     otherPriceContainer.style.display = "none";
+    otherPriceEl.value = "";
   }
 }
 
+// Toggle dropdown
+selectedPackage.onclick = () => {
+  packageOptions.style.display = packageOptions.style.display === "block" ? "none" : "block";
+};
+
+// Close if click outside
+document.addEventListener("click", function(e){
+  if(!document.getElementById("customDropdown").contains(e.target)){
+    packageOptions.style.display = "none";
+  }
+});
+
 // Add or update session
 function addCommission() {
-  let price = packageSelectEl.value === "other" ? Number(otherPriceEl.value) : Number(packageSelectEl.value);
+  let price = selectedPackage.dataset.price === "other" ? Number(otherPriceEl.value) : Number(selectedPackage.dataset.price);
   const rate = Number(serviceTypeEl.value);
   const date = dateEl.value;
 
@@ -101,9 +119,7 @@ function addCommission() {
   localStorage.setItem("sessions", JSON.stringify(sessions));
 
   // Reset inputs
-  packageSelectEl.selectedIndex = 0;
-  otherPriceContainer.style.display = "none";
-  otherPriceEl.value = "";
+  populatePackages();
   dateEl.valueAsDate = new Date();
 
   render();
@@ -116,18 +132,14 @@ function editSession(index) {
   populatePackages();
 
   let foundOption = false;
-  for(let i=0;i<packageSelectEl.options.length;i++){
-    if(Number(packageSelectEl.options[i].value) === s.price){
-      packageSelectEl.selectedIndex = i;
+  for(let i=0;i<packageOptions.children.length;i++){
+    if(Number(packageOptions.children[i].dataset.price) === s.price){
+      selectPackage(s.price, packageOptions.children[i].textContent);
       foundOption = true;
       break;
     }
   }
-  if(!foundOption){
-    packageSelectEl.value = "other";
-    otherPriceContainer.style.display = "block";
-    otherPriceEl.value = s.price;
-  } else { otherPriceContainer.style.display = "none"; }
+  if(!foundOption) selectPackage("other", "Others");
 
   dateEl.value = s.date;
   editIndex = index;
@@ -207,3 +219,12 @@ function updateTotalSalaryByMonth(){
     const d = new Date(s.date);
     return d.getFullYear()===year && (d.getMonth()+1)===mon;
   }).reduce((sum,s)=>sum+s.commission,0);
+  document.getElementById("totalSalaryByMonth").textContent = total.toFixed(2);
+}
+
+// ---------- Init ----------
+populatePackages();
+render();
+
+// Update label when service type changes
+serviceTypeEl.addEventListener("change", populatePackages);
