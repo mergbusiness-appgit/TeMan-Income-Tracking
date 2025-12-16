@@ -1,4 +1,4 @@
-// ---------- Data ----------
+// ---------- Package Data ----------
 const packages = {
   center: [
     {name: "60 minutes / RM 150", price: 150},
@@ -38,11 +38,10 @@ document.getElementById("filterPeriod").value = (today.getDate() <= 14) ? "1" : 
 
 // ---------- Functions ----------
 
-// Populate package dropdown dynamically
+// Populate packages dynamically
 function populatePackages() {
   const type = serviceTypeEl.value;
   packageSelectEl.innerHTML = "";
-
   const list = type === "0.35" ? packages.center : packages.home;
   list.forEach(p => {
     const option = document.createElement("option");
@@ -60,7 +59,7 @@ function populatePackages() {
   otherPriceEl.value = "";
 }
 
-// Show/hide custom price input
+// Show/hide custom price
 function packageChange() {
   if(packageSelectEl.value === "other") {
     otherPriceContainer.style.display = "block";
@@ -75,11 +74,7 @@ function addCommission() {
   const rate = Number(serviceTypeEl.value);
   const date = dateEl.value;
 
-  if(!price || !date) {
-    alert("Please enter valid price and date");
-    return;
-  }
-
+  if(!price || !date) { alert("Enter valid price and date"); return; }
   const commission = price * rate;
 
   if(editIndex !== null) {
@@ -107,7 +102,7 @@ function editSession(index) {
   populatePackages();
 
   let foundOption = false;
-  for(let i=0; i<packageSelectEl.options.length; i++){
+  for(let i=0;i<packageSelectEl.options.length;i++){
     if(Number(packageSelectEl.options[i].value) === s.price){
       packageSelectEl.selectedIndex = i;
       foundOption = true;
@@ -118,9 +113,7 @@ function editSession(index) {
     packageSelectEl.value = "other";
     otherPriceContainer.style.display = "block";
     otherPriceEl.value = s.price;
-  } else {
-    otherPriceContainer.style.display = "none";
-  }
+  } else { otherPriceContainer.style.display = "none"; }
 
   dateEl.value = s.date;
   editIndex = index;
