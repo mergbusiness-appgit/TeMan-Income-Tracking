@@ -1,13 +1,8 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   background: #f2f4f7;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #111;
 }
 
 .app {
@@ -16,16 +11,8 @@ body {
   padding: 16px;
 }
 
-h1 {
-  text-align: center;
-  font-size: 28px;
-}
-
-.subtitle {
-  text-align: center;
-  color: #666;
-  margin-bottom: 18px;
-}
+h1 { text-align: center; font-size: 28px; }
+.subtitle { text-align: center; color: #666; margin-bottom: 16px; }
 
 .card {
   background: #fff;
@@ -35,98 +22,47 @@ h1 {
   box-shadow: 0 6px 16px rgba(0,0,0,0.06);
 }
 
-.card.total {
-  text-align: center;
-}
+label { font-weight: 500; margin-bottom: 6px; display: block; }
 
-label {
-  margin-bottom: 6px;
-  display: block;
-}
-
-input, select, button {
+input, select {
   width: 100%;
-  padding: 14px;
-  margin-bottom: 14px;
-  font-size: 16px;
-  border-radius: 12px;
+  padding: 12px;
+  border-radius: 10px;
   border: 1px solid #ddd;
+  margin-bottom: 12px;
+  font-size: 16px;
 }
 
 button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
   background: #111;
   color: #fff;
-  font-weight: 600;
-  cursor: pointer;
+  font-size: 16px;
 }
 
-button:active {
-  opacity: 0.9;
-}
+.card.total { text-align: center; }
+.card.total p { font-size: 22px; font-weight: bold; }
 
-/* Sessions scroll area */
-.sessions-wrapper {
-  max-height: 260px; /* ~4 sessions */
+.scroll-list {
+  max-height: 240px;
   overflow-y: auto;
-  margin-top: 10px;
-  padding-right: 4px;
-  -webkit-overflow-scrolling: touch;
 }
 
-.sessions-wrapper::-webkit-scrollbar {
-  width: 4px;
-}
-
-.sessions-wrapper::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
-}
-
-ul {
-  list-style: none;
-}
-
-.session-row {
-  background: #fafafa;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 8px;
+.session {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #ddd;
 }
 
-.session-date {
-  font-size: 12px;
-  color: #888;
-}
+.session small { color: #777; }
 
-.session-row div:last-child {
-  display: flex;
-  gap: 6px;
-}
-
-.session-row button {
-  min-width: 36px;
-  min-height: 36px;
-  border-radius: 6px;
-  border: none;
+.session button {
   background: #555;
-  color: #fff;
-}
-
-.session-row button:first-child {
-  background: #0d6efd;
-}
-
-.session-row button:last-child {
-  background: #dc3545;
-}
-
-@media (max-width: 400px) {
-  .session-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 14px;
 }
