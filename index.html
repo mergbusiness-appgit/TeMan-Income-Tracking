@@ -15,7 +15,7 @@
   <!-- Input Card -->
   <div class="card">
     <label>Service Type</label>
-    <select id="serviceType">
+    <select id="serviceType" onchange="resetPackageOptions()">
       <option value="0.35">Center (35%)</option>
       <option value="0.50">Home Service (50%)</option>
     </select>
@@ -23,13 +23,26 @@
     <label>Date</label>
     <input type="date" id="date" />
 
-    <label id="packageLabel">Package / Customer Paid (RM) – Center</label>
-
-    <!-- Custom Dropdown -->
-    <div class="custom-dropdown" id="customDropdown">
-      <div class="selected" id="selectedPackage">Select Package</div>
-      <div class="options" id="packageOptions"></div>
-    </div>
+    <label>Package / Customer Paid (RM)</label>
+    <select id="packageSelect" onchange="packageChange()">
+      <optgroup label="Center">
+        <option value="150">60 minutes / RM 150</option>
+        <option value="210">90 minutes / RM 210</option>
+        <option value="250">120 minutes / RM 250</option>
+        <option value="220">60 mins massage + 30 mins / RM 220</option>
+        <option value="260">90 mins massage + 30 mins / RM 260</option>
+        <option value="300">120 mins massage + 30 mins / RM 300</option>
+        <option value="280">60 mins massage + 30 + 30 / RM 280</option>
+        <option value="320">90 mins massage + 30 + 30 / RM 320</option>
+        <option value="360">120 mins massage + 30 + 30 / RM 360</option>
+      </optgroup>
+      <optgroup label="Home Service">
+        <option value="150">60 minutes / RM 150</option>
+        <option value="220">90 minutes / RM 220</option>
+        <option value="280">120 minutes / RM 280</option>
+      </optgroup>
+      <option value="other">Others</option>
+    </select>
 
     <div id="otherPriceContainer" style="display:none; margin-top:8px;">
       <input type="number" id="otherPrice" placeholder="Enter custom price RM" />
