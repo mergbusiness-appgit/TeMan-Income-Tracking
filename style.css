@@ -31,7 +31,6 @@ h1 {
   color: #666;
 }
 
-/* CARD */
 .card {
   background: #fff;
   padding: 18px;
@@ -83,7 +82,6 @@ button:hover {
   color: #fff;
 }
 
-/* TOTAL CARDS */
 .card.total {
   text-align: center;
 }
@@ -98,7 +96,6 @@ button:hover {
   margin-top: 4px;
 }
 
-/* SESSION LIST */
 ul {
   list-style: none;
   padding: 0;
@@ -145,7 +142,6 @@ li {
   white-space: nowrap;
 }
 
-/* MOBILE */
 @media (max-width: 420px) {
   .session-row {
     flex-direction: column;
