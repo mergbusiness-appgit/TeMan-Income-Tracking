@@ -1,77 +1,115 @@
+const serviceType = document.getElementById("serviceType");
+const packageSelect = document.getElementById("packageSelect");
+const otherPriceBox = document.getElementById("otherPriceBox");
+const otherPrice = document.getElementById("otherPrice");
+
 let sessions = JSON.parse(localStorage.getItem("sessions")) || [];
 let editIndex = null;
 
-// AUTO TODAY
+/* ================= PACKAGES ================= */
+
+const centerPackages = [
+  { label: "60 min / RM150", price: 150 },
+  { label: "90 min / RM210", price: 210 },
+  { label: "120 min / RM250", price: 250 },
+  { label: "60 + 30 / RM220", price: 220 },
+  { label: "90 + 30 / RM260", price: 260 },
+  { label: "120 + 30 / RM300", price: 300 },
+  { label: "60 + 30 + 30 / RM280", price: 280 },
+  { label: "90 + 30 + 30 / RM320", price: 320 },
+  { label: "120 + 30 + 30 / RM360", price: 360 }
+];
+
+const homePackages = [
+  { label: "60 min / RM150", price: 150 },
+  { label: "90 min / RM220", price: 220 },
+  { label: "120 min / RM280", price: 280 }
+];
+
+/* ================= INIT DATES ================= */
+
 const today = new Date();
 date.valueAsDate = today;
-syncFiltersToDate(today.toISOString().slice(0,10));
+filterDate.valueAsDate = today;
+filterMonth.value = today.toISOString().slice(0,7);
+filterSalaryMonth.value = today.toISOString().slice(0,7);
+filterPeriod.value = today.getDate() <= 14 ? "1" : "2";
 
-// PACKAGE
+/* ================= FUNCTIONS ================= */
+
+function populatePackages() {
+  packageSelect.innerHTML = "";
+  const packages = serviceType.value === "0.35" ? centerPackages : homePackages;
+
+  packages.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p.price;
+    opt.textContent = p.label;
+    packageSelect.appendChild(opt);
+  });
+
+  const other = document.createElement("option");
+  other.value = "other";
+  other.textContent = "Others";
+  packageSelect.appendChild(other);
+
+  otherPriceBox.style.display = "none";
+}
+
 function packageChange() {
   otherPriceBox.style.display =
     packageSelect.value === "other" ? "block" : "none";
 }
 
-// ADD SESSION
-function addSession() {
-  const price = packageSelect.value === "other"
-    ? Number(otherPrice.value)
-    : Number(packageSelect.value);
+serviceType.addEventListener("change", populatePackages);
+packageSelect.addEventListener("change", packageChange);
 
-  if (!price || !date.value) {
+/* ================= ADD SESSION ================= */
+
+function addCommission() {
+  let price =
+    packageSelect.value === "other"
+      ? Number(otherPrice.value)
+      : Number(packageSelect.value);
+
+  const rate = Number(serviceType.value);
+  const dateVal = date.value;
+
+  if (!price || !dateVal) {
     alert("Please enter valid data");
     return;
   }
 
-  const rate = Number(serviceType.value);
   const commission = price * rate;
 
-  const data = {
-    date: date.value,
-    price,
-    rate,
-    commission
-  };
+  if (editIndex !== null) {
+    sessions[editIndex] = { price, rate, commission, date: dateVal };
+    editIndex = null;
+  } else {
+    sessions.push({ price, rate, commission, date: dateVal });
+  }
 
-  editIndex !== null
-    ? sessions[editIndex] = data
-    : sessions.push(data);
-
-  editIndex = null;
   localStorage.setItem("sessions", JSON.stringify(sessions));
-
-  syncFiltersToDate(date.value);
+  otherPrice.value = "";
+  populatePackages();
   render();
 }
 
-// 🔑 FIX FUNCTION — AUTO SYNC FILTERS
-function syncFiltersToDate(dateStr) {
-  const d = new Date(dateStr);
+/* ================= RENDER ================= */
 
-  filterDate.value = dateStr;
-
-  const ym = d.toISOString().slice(0,7);
-  filterMonth.value = ym;
-  filterSalaryMonth.value = ym;
-
-  filterPeriod.value = d.getDate() <= 14 ? "1" : "2";
-}
-
-// RENDER
 function render() {
-  sessionList.innerHTML = "";
+  list.innerHTML = "";
   let total = 0;
 
   sessions.forEach((s, i) => {
     total += s.commission;
-
-    sessionList.innerHTML += `
-      <li class="session">
+    list.innerHTML += `
+      <li class="session-row">
         <div>
-          RM ${s.price} × ${(s.rate * 100)}%<br>
-          <b>RM ${s.commission.toFixed(2)}</b><br>
-          <small>${s.date}</small>
+          RM ${s.price} × ${s.rate * 100}%<br>
+          <b>RM ${s.commission.toFixed(2)}</b>
         </div>
+        <div class="session-date">${s.date}</div>
         <div>
           <button onclick="editSession(${i})">✏️</button>
           <button onclick="deleteSession(${i})">🗑️</button>
@@ -80,20 +118,37 @@ function render() {
     `;
   });
 
-  grandTotal.textContent = `RM ${total.toFixed(2)}`;
-  calcTotals();
+  totalEl.textContent = `RM ${total.toFixed(2)}`;
+  updateTotalByDate();
+  updateTotalByPeriod();
+  updateTotalSalaryByMonth();
 }
 
-// EDIT
+/* ================= EDIT / DELETE ================= */
+
 function editSession(i) {
   const s = sessions[i];
   serviceType.value = s.rate;
+  populatePackages();
+
+  let matched = false;
+  [...packageSelect.options].forEach(o => {
+    if (Number(o.value) === s.price) {
+      packageSelect.value = o.value;
+      matched = true;
+    }
+  });
+
+  if (!matched) {
+    packageSelect.value = "other";
+    otherPriceBox.style.display = "block";
+    otherPrice.value = s.price;
+  }
+
   date.value = s.date;
-  packageSelect.value = s.price;
   editIndex = i;
 }
 
-// DELETE
 function deleteSession(i) {
   if (confirm("Delete this session?")) {
     sessions.splice(i, 1);
@@ -102,58 +157,43 @@ function deleteSession(i) {
   }
 }
 
-// TOTAL CALC
-function calcTotals() {
-  totalByDate.textContent = sum(s => s.date === filterDate.value);
+/* ================= TOTALS ================= */
 
-  const [y, m] = filterMonth.value.split("-").map(Number);
-  totalByPeriod.textContent = sum(s => {
-    const d = new Date(s.date);
-    const day = d.getDate();
-    return d.getFullYear() === y &&
-      d.getMonth() + 1 === m &&
-      (filterPeriod.value === "1" ? day <= 14 : day >= 15);
-  });
-
-  totalByMonth.textContent = sum(s => {
-    const d = new Date(s.date);
-    return d.getFullYear() === y && d.getMonth() + 1 === m;
-  });
-}
-
-function sum(fn) {
-  return sessions.filter(fn)
-    .reduce((a, b) => a + b.commission, 0)
+function updateTotalByDate() {
+  const d = filterDate.value;
+  totalByDate.textContent = sessions
+    .filter(s => s.date === d)
+    .reduce((a,b)=>a+b.commission,0)
     .toFixed(2);
 }
 
-// FILTER EVENTS
-filterDate.onchange = calcTotals;
-filterMonth.onchange = calcTotals;
-filterPeriod.onchange = calcTotals;
-filterSalaryMonth.onchange = calcTotals;
+function updateTotalByPeriod() {
+  const [y,m] = filterMonth.value.split("-").map(Number);
+  const p = filterPeriod.value;
 
-// PDF EXPORT (2-WEEK)
-function exportPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  doc.text("TeMan Wellness – Salary Report", 14, 16);
-
-  doc.autoTable({
-    startY: 24,
-    head: [["Date", "Service", "Paid", "%", "Commission"]],
-    body: sessions.map(s => [
-      s.date,
-      s.rate === 0.35 ? "Center" : "Home",
-      "RM " + s.price,
-      (s.rate * 100) + "%",
-      "RM " + s.commission.toFixed(2)
-    ])
-  });
-
-  doc.save("TeMan_Wellness_Salary.pdf");
+  totalByPeriod.textContent = sessions.filter(s => {
+    const d = new Date(s.date);
+    const day = d.getDate();
+    return d.getFullYear() === y &&
+           d.getMonth()+1 === m &&
+           (p==="1" ? day<=14 : day>=15);
+  }).reduce((a,b)=>a+b.commission,0).toFixed(2);
 }
 
-// INIT
+function updateTotalSalaryByMonth() {
+  const [y,m] = filterSalaryMonth.value.split("-").map(Number);
+  totalSalaryByMonth.textContent = sessions.filter(s=>{
+    const d = new Date(s.date);
+    return d.getFullYear()===y && d.getMonth()+1===m;
+  }).reduce((a,b)=>a+b.commission,0).toFixed(2);
+}
+
+filterDate.onchange = updateTotalByDate;
+filterMonth.onchange = updateTotalByPeriod;
+filterPeriod.onchange = updateTotalByPeriod;
+filterSalaryMonth.onchange = updateTotalSalaryByMonth;
+
+/* ================= START ================= */
+
+populatePackages();
 render();
