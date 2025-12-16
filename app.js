@@ -26,7 +26,7 @@ function addCommission() {
   render();
 }
 
-// Render session list and totals
+// Render session list and total
 function render() {
   const list = document.getElementById("list");
   const totalEl = document.getElementById("total");
@@ -49,42 +49,75 @@ function render() {
   });
 
   totalEl.textContent = `RM ${total.toFixed(2)}`;
-  updateTotalAll();
 
-  // Update filters if already selected
-  const filterDate = document.getElementById("filterDate").value;
-  if(filterDate) document.getElementById("filterDate").dispatchEvent(new Event("change"));
-  const filterPeriod = document.getElementById("filterPeriod").value;
-  if(filterPeriod) document.getElementById("filterPeriod").dispatchEvent(new Event("change"));
+  updateTotalByDate();
+  updateTotalByPeriod();
+  updateTotalSalaryByMonth();
 }
 
-// Update total sum of all commissions
-function updateTotalAll() {
-  const total = sessions.reduce((sum, s) => sum + s.commission, 0);
-  document.getElementById("totalAll").textContent = total.toFixed(2);
-}
-
-// Filter by date
-document.getElementById("filterDate").addEventListener("change", function() {
-  const selectedDate = this.value;
+// ----------------------
+// Total by Date
+document.getElementById("filterDate").addEventListener("change", updateTotalByDate);
+function updateTotalByDate() {
+  const selectedDate = document.getElementById("filterDate").value;
   const total = sessions
     .filter(s => s.date === selectedDate)
     .reduce((sum, s) => sum + s.commission, 0);
   document.getElementById("totalByDate").textContent = total.toFixed(2);
-});
+}
 
-// Filter by 2-week period
-document.getElementById("filterPeriod").addEventListener("change", function() {
-  const period = this.value;
+// ----------------------
+// Total by 2-week period (based on selected month)
+document.getElementById("filterMonth").addEventListener("change", updateTotalByPeriod);
+document.getElementById("filterPeriod").addEventListener("change", updateTotalByPeriod);
+
+function updateTotalByPeriod() {
+  const month = document.getElementById("filterMonth").value; // yyyy-mm
+  const period = document.getElementById("filterPeriod").value;
+
+  if (!month) {
+    document.getElementById("totalByPeriod").textContent = "0.00";
+    return;
+  }
+
+  const [year, mon] = month.split("-").map(Number);
+
   const total = sessions
     .filter(s => {
+      const d = new Date(s.date);
+      return d.getFullYear() === year && (d.getMonth()+1) === mon;
+    })
+    .filter(s => {
       const day = new Date(s.date).getDate();
-      if(period === "1") return day >= 1 && day <= 14;
-      return day >= 15;
+      if(period === "1") return day >=1 && day <=14;
+      return day >=15;
     })
     .reduce((sum, s) => sum + s.commission, 0);
+
   document.getElementById("totalByPeriod").textContent = total.toFixed(2);
-});
+}
+
+// ----------------------
+// Total Salary by Month
+document.getElementById("filterSalaryMonth").addEventListener("change", updateTotalSalaryByMonth);
+function updateTotalSalaryByMonth() {
+  const month = document.getElementById("filterSalaryMonth").value; // yyyy-mm
+  if(!month) {
+    document.getElementById("totalSalaryByMonth").textContent = "0.00";
+    return;
+  }
+
+  const [year, mon] = month.split("-").map(Number);
+
+  const total = sessions
+    .filter(s => {
+      const d = new Date(s.date);
+      return d.getFullYear() === year && (d.getMonth()+1) === mon;
+    })
+    .reduce((sum, s) => sum + s.commission, 0);
+
+  document.getElementById("totalSalaryByMonth").textContent = total.toFixed(2);
+}
 
 // Initial render
 render();
