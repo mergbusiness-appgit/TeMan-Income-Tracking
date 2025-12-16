@@ -41,24 +41,32 @@
     <p id="total">RM 0.00</p>
   </div>
 
-  <!-- Summary Card -->
-  <div class="card">
-    <h3>📊 Summary</h3>
-
-    <label>View Total by Date:</label>
+  <!-- Total by Date Card -->
+  <div class="card total">
+    <h2>View Total by Date</h2>
     <input type="date" id="filterDate" />
-    <p>Total on selected date: RM <span id="totalByDate">0.00</span></p>
+    <p>RM <span id="totalByDate">0.00</span></p>
+  </div>
 
-    <label>Select 2-week period:</label>
+  <!-- Total by 2-Week Period Card -->
+  <div class="card total">
+    <h2>Total by 2-Week Period</h2>
+    <label>Select Month:</label>
+    <input type="month" id="filterMonth" />
     <select id="filterPeriod">
       <option value="1">1st - 14th</option>
       <option value="2">15th - end</option>
     </select>
-    <p>Total for period: RM <span id="totalByPeriod">0.00</span></p>
-
-    <h4>Total Salary Earned:</h4>
-    <p>RM <span id="totalAll">0.00</span></p>
+    <p>RM <span id="totalByPeriod">0.00</span></p>
   </div>
+
+  <!-- Total Salary by Month Card -->
+  <div class="card total">
+    <h2>Total Salary by Month</h2>
+    <input type="month" id="filterSalaryMonth" />
+    <p>RM <span id="totalSalaryByMonth">0.00</span></p>
+  </div>
+
 </div>
 
 <script src="app.js"></script>
