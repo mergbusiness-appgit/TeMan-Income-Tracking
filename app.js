@@ -4,16 +4,16 @@ let sessions = JSON.parse(localStorage.getItem("sessions")) || [];
 // Auto-set today's date in add session
 document.getElementById("date").valueAsDate = new Date();
 
-// Auto-set default values for filters
+// Auto-set default filters
 const today = new Date();
 document.getElementById("filterDate").valueAsDate = today;
 document.getElementById("filterMonth").value = today.toISOString().slice(0,7);
 document.getElementById("filterSalaryMonth").value = today.toISOString().slice(0,7);
-
-// Auto-set 2-week period based on today
 document.getElementById("filterPeriod").value = (today.getDate() <= 14) ? "1" : "2";
 
-// Add new commission session
+// Add or update session
+let editIndex = null;
+
 function addCommission() {
   const price = Number(document.getElementById("price").value);
   const rate = Number(document.getElementById("serviceType").value);
@@ -26,7 +26,15 @@ function addCommission() {
 
   const commission = price * rate;
 
-  sessions.push({ price, rate, commission, date });
+  if(editIndex !== null) {
+    // Update existing session
+    sessions[editIndex] = { price, rate, commission, date };
+    editIndex = null;
+  } else {
+    // Add new session
+    sessions.push({ price, rate, commission, date });
+  }
+
   localStorage.setItem("sessions", JSON.stringify(sessions));
 
   document.getElementById("price").value = "";
@@ -35,7 +43,7 @@ function addCommission() {
   render();
 }
 
-// Render sessions and update all totals
+// Render sessions and totals
 function render() {
   const list = document.getElementById("list");
   const totalEl = document.getElementById("total");
@@ -43,7 +51,7 @@ function render() {
   list.innerHTML = "";
   let total = 0;
 
-  sessions.forEach((s) => {
+  sessions.forEach((s, index) => {
     total += s.commission;
 
     list.innerHTML += `
@@ -52,17 +60,40 @@ function render() {
           RM ${s.price} × ${(s.rate*100)}%<br>
           <b>RM ${s.commission.toFixed(2)}</b>
         </div>
-        <div class="session-date">${s.date}</div>
+        <div class="session-date">
+          ${s.date}
+        </div>
+        <div>
+          <button onclick="editSession(${index})">✏️</button>
+          <button onclick="deleteSession(${index})">🗑️</button>
+        </div>
       </li>
     `;
   });
 
   totalEl.textContent = `RM ${total.toFixed(2)}`;
 
-  // Update all totals
   updateTotalByDate();
   updateTotalByPeriod();
   updateTotalSalaryByMonth();
+}
+
+// Edit session
+function editSession(index) {
+  const s = sessions[index];
+  document.getElementById("price").value = s.price;
+  document.getElementById("serviceType").value = s.rate;
+  document.getElementById("date").value = s.date;
+  editIndex = index;
+}
+
+// Delete session
+function deleteSession(index) {
+  if(confirm("Are you sure you want to delete this session?")) {
+    sessions.splice(index,1);
+    localStorage.setItem("sessions", JSON.stringify(sessions));
+    render();
+  }
 }
 
 // ----------------------
@@ -77,7 +108,7 @@ function updateTotalByDate() {
 }
 
 // ----------------------
-// Total by 2-week period (month-based)
+// Total by 2-week period
 document.getElementById("filterMonth").addEventListener("change", updateTotalByPeriod);
 document.getElementById("filterPeriod").addEventListener("change", updateTotalByPeriod);
 
