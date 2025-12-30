@@ -196,38 +196,51 @@ function getSessionsBy2Week(){
 
 function export2WeekPDF(){
   const data = getSessionsBy2Week();
-  if(data.length===0){ alert("No sessions found for selected period"); return; }
+  if(data.length === 0){ 
+    alert("No sessions found for selected period"); 
+    return; 
+  }
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  doc.setFontSize(16);
+  // Header
+  doc.setFontSize(18);
   doc.text("TeMan Wellness", 14, 20);
   doc.setFontSize(12);
-  doc.text("2-Week Salary Report", 14, 30);
+  doc.text("2-Week Salary Report", 14, 28);
+  doc.text(`Period: ${filterMonth.value} - ${filterPeriod.value === "1" ? "1–14" : "15–End"}`, 14, 34);
 
-  let y = 40;
-  let total = 0;
+  // Prepare table data
+  const tableData = data.map((s, i) => [
+    i + 1,
+    s.date,
+    `RM ${s.price.toFixed(2)}`,
+    `${(s.rate*100).toFixed(0)}%`,
+    `RM ${s.commission.toFixed(2)}`
+  ]);
 
-  data.forEach((s,i)=>{
-    total += s.commission;
-    doc.text(`${i+1}. Date: ${s.date}`, 14, y);
-    y += 6;
-    doc.text(`   Price: RM ${s.price}`, 14, y);
-    y += 6;
-    doc.text(`   Commission: RM ${s.commission.toFixed(2)}`, 14, y);
-    y += 8;
-
-    // add new page if y > 280
-    if(y > 280){
-      doc.addPage();
-      y = 20;
-    }
+  // Add table
+  doc.autoTable({
+    startY: 40,
+    head: [["No", "Date", "Price Paid", "Rate", "Commission"]],
+    body: tableData,
+    styles: { fontSize: 10, cellPadding: 3 },
+    headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+    alternateRowStyles: { fillColor: [245, 245, 245] },
+    margin: { left: 14, right: 14 },
   });
 
-  doc.text(`TOTAL COMMISSION: RM ${total.toFixed(2)}`, 14, y+6);
+  // Total
+  const total = data.reduce((sum, s) => sum + s.commission, 0);
+  const finalY = doc.lastAutoTable.finalY || 40;
+  doc.setFontSize(12);
+  doc.text(`TOTAL COMMISSION: RM ${total.toFixed(2)}`, 14, finalY + 10);
+
+  // Save PDF
   doc.save("TeMan_2Week_Salary.pdf");
 }
+
 
 
 /* ====== INITIALIZE ====== */
