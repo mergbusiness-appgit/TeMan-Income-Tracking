@@ -198,21 +198,35 @@ function export2WeekPDF(){
   const data = getSessionsBy2Week();
   if(data.length===0){ alert("No sessions found for selected period"); return; }
 
-  let total = 0;
-  let content = `TeMan Wellness\n\n2-Week Salary Report\n\n`;
-  data.forEach((s,i)=>{
-    total+=s.commission;
-    content+= `${i+1}. Date: ${s.date}\n   Price: RM ${s.price}\n   Commission: RM ${s.commission.toFixed(2)}\n\n`;
-  });
-  content+= `TOTAL COMMISSION: RM ${total.toFixed(2)}`;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-  const blob = new Blob([content],{type:"application/pdf"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href=url;
-  a.download = "TeMan_2Week_Salary.pdf";
-  a.click();
-  URL.revokeObjectURL(url);
+  doc.setFontSize(16);
+  doc.text("TeMan Wellness", 14, 20);
+  doc.setFontSize(12);
+  doc.text("2-Week Salary Report", 14, 30);
+
+  let y = 40;
+  let total = 0;
+
+  data.forEach((s,i)=>{
+    total += s.commission;
+    doc.text(`${i+1}. Date: ${s.date}`, 14, y);
+    y += 6;
+    doc.text(`   Price: RM ${s.price}`, 14, y);
+    y += 6;
+    doc.text(`   Commission: RM ${s.commission.toFixed(2)}`, 14, y);
+    y += 8;
+
+    // add new page if y > 280
+    if(y > 280){
+      doc.addPage();
+      y = 20;
+    }
+  });
+
+  doc.text(`TOTAL COMMISSION: RM ${total.toFixed(2)}`, 14, y+6);
+  doc.save("TeMan_2Week_Salary.pdf");
 }
 
 /* ====== INITIALIZE ====== */
