@@ -2,86 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>TeMan Wellness – Commission</title>
+  <title>TeMan Wellness – Income Tracking</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- PDF LIBS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
 
-<div class="app">
-  <h1>💆 TeMan Wellness</h1>
+<header>
+  <h1>TeMan Wellness</h1>
   <p class="subtitle">Commission Calculator</p>
+</header>
 
-  <select id="languageSelect" style="margin-bottom:16px">
-  <option value="en">English</option>
-  <option value="bm">Bahasa Melayu</option>
-</select>
-  <!-- INPUT CARD -->
+<div class="container">
+
+  <!-- LANGUAGE -->
   <div class="card">
-    <label for="serviceType">Service Type</label>
+    <label>Language</label>
+    <select id="languageSelect">
+      <option value="en">English</option>
+      <option value="bm">Bahasa Melayu</option>
+    </select>
+  </div>
+
+  <!-- ADD SESSION -->
+  <div class="card">
+    <label>Service Type</label>
     <select id="serviceType">
       <option value="0.35">Center (35%)</option>
       <option value="0.50">Home Service (50%)</option>
+      <option value="movman">MovMan Mobile (50%)</option>
     </select>
 
-    <label for="date">Date</label>
-    <input type="date" id="date" />
-
-    <label for="packageSelect">Package / Customer Paid (RM)</label>
+    <label>Package</label>
     <select id="packageSelect"></select>
 
     <div id="otherPriceBox" style="display:none">
-      <input type="number" id="otherPrice" placeholder="Enter custom price RM">
+      <label>Other Price (RM)</label>
+      <input type="number" id="otherPrice">
     </div>
 
-    <button type="button" onclick="addCommission()">Add Session</button>
+    <label>Date</label>
+    <input type="date" id="date">
+
+    <button onclick="addCommission()" id="addBtn">Add Session</button>
   </div>
 
-  <!-- SESSIONS -->
+  <!-- FILTER -->
   <div class="card">
-    <h3>📋 Sessions</h3>
-    <ul id="list"></ul>
-  </div>
+    <label>Month</label>
+    <input type="month" id="filterMonth">
 
-  <!-- TOTAL BY DATE -->
-  <div class="card total">
-    <h2>View Total by Date</h2>
-    <input type="date" id="filterDate" />
-    <p>RM <span id="totalByDate">0.00</span></p>
-  </div>
-
-  <!-- TOTAL BY 2 WEEKS -->
-  <div class="card total">
-    <h2>Total by 2-Week Period</h2>
-    <input type="month" id="filterMonth" />
+    <label>Period</label>
     <select id="filterPeriod">
       <option value="1">1 – 14</option>
       <option value="2">15 – End</option>
     </select>
-    <p>RM <span id="totalByPeriod">0.00</span></p>
-    <button type="button" onclick="export2WeekPDF()" class="export-btn">Export 2-Week PDF</button>
   </div>
 
-  <!-- TOTAL BY MONTH -->
-  <div class="card total">
-    <h2>Total Salary by Month</h2>
-    <input type="month" id="filterSalaryMonth" />
-    <p>RM <span id="totalSalaryByMonth">0.00</span></p>
+  <!-- SESSIONS -->
+  <div class="card">
+    <h3 id="sessionTitle">📋 Sessions</h3>
+    <ul id="list"></ul>
   </div>
 
-  <!-- GRAND TOTAL -->
+  <!-- TOTALS -->
   <div class="card total">
-    <h2>Total Commission</h2>
-    <p id="total">RM 0.00</p>
+    <h2 id="total2WeekTitle">Total by 2-Week Period</h2>
+    RM <span id="totalByPeriod">0.00</span>
+    <button class="export-btn" onclick="export2WeekPDF()" id="exportBtn">
+      Export 2-Week PDF
+    </button>
   </div>
+
+  <div class="card total">
+    <h2 id="salaryMonthTitle">Total Salary by Month</h2>
+    RM <span id="totalSalaryByMonth">0.00</span>
+  </div>
+
+  <div class="card total">
+    <h2 id="totalTitle">Total Commission</h2>
+    RM <span id="total">0.00</span>
+  </div>
+
 </div>
 
-<script src="app.js"></script>
-  <!-- jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<!-- jsPDF AutoTable for tables -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-
-
+<script src="script.js"></script>
 </body>
 </html>
