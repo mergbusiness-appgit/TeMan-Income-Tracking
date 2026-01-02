@@ -1,156 +1,31 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f6f8; color: #222; line-height: 1.5; }
+h1 { text-align: center; margin-bottom: 4px; font-size: 28px; color: #111; }
+.subtitle { text-align: center; margin-bottom: 20px; font-size: 16px; color: #666; }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f5f6f8;
-  color: #222;
-  line-height: 1.5;
-}
+.app { max-width: 520px; margin: 20px auto; padding: 16px; }
 
-header {
-  background: #111;
-  color: #fff;
-  padding: 18px 16px;
-  text-align: center;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-}
+.card { background: #fff; padding: 18px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); transition: transform 0.2s ease; }
+.card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.1); }
 
-.subtitle {
-  font-size: 14px;
-  opacity: 0.8;
-  margin-top: 4px;
-}
+label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 12px; opacity: 0.8; }
+input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 14px; }
+button { width: 100%; padding: 14px; margin-top: 8px; background: #FFB500; color: #111; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
+button:hover { opacity: 0.9; }
+.export-btn { background: #222; color: #fff; }
 
-.container {
-  max-width: 520px;
-  margin: auto;
-  padding: 16px;
-}
+ul { list-style: none; max-height: 300px; overflow-y: auto; padding-right: 4px; }
+.session-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+.session-date { font-size: 12px; color: #888; white-space: nowrap; }
+.session-row button { width: auto; padding: 6px 8px; background: #eee; border-radius: 8px; font-size: 12px; cursor: pointer; margin-left: 6px; }
+.session-row button:hover { background: #ddd; }
 
-/* === CARD === */
-.card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+.card.total { text-align: center; }
+.card.total h2 { font-size: 14px; margin-bottom: 6px; }
+.card.total span, .card.total p { font-size: 20px; font-weight: bold; }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(0,0,0,0.1);
-}
-
-/* === FORM ELEMENTS === */
-label {
-  font-size: 12px;
-  opacity: 0.7;
-  display: block;
-  margin-bottom: 6px;
-}
-
-input, select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  margin-bottom: 12px;
-  font-size: 14px;
-}
-
-button {
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: none;
-  background: #ffb500;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-.export-btn {
-  background: #222;
-  color: #fff;
-  margin-top: 10px;
-}
-
-/* === SESSION LIST === */
-ul {
-  list-style: none;
-  max-height: 300px; /* Scrolling for long lists */
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.session-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-}
-
-.session-row:last-child {
-  border-bottom: none;
-}
-
-.session-date {
-  font-size: 12px;
-  opacity: 0.6;
-  white-space: nowrap;
-}
-
-.session-row button {
-  width: auto;
-  padding: 6px 8px;
-  margin-left: 6px;
-  background: #eee;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.session-row button:hover {
-  background: #ddd;
-}
-
-/* === TOTAL CARDS === */
-.total h2 {
-  font-size: 14px;
-  margin-bottom: 6px;
-}
-
-.total span {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-/* === RESPONSIVE === */
 @media (max-width: 420px) {
-  .session-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-  }
-
-  .session-row div:last-child {
-    display: flex;
-    gap: 6px;
-  }
-
-  input, select, button {
-    font-size: 14px;
-  }
+  .session-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .session-row div:last-child { display: flex; gap: 6px; }
+  input, select, button { font-size: 14px; }
 }
