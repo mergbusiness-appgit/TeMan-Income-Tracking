@@ -16,8 +16,38 @@ const totalByPeriod = document.getElementById("totalByPeriod");
 const filterSalaryMonth = document.getElementById("filterSalaryMonth");
 const totalSalaryByMonth = document.getElementById("totalSalaryByMonth");
 
+const languageSelect = document.getElementById("languageSelect");
+
 let sessions = JSON.parse(localStorage.getItem("sessions")) || [];
 let editIndex = null;
+
+/* ====== TRANSLATIONS ====== */
+const translations = {
+  en: {
+    subtitle: "Commission Calculator",
+    add: "Add Session",
+    sessions: "Sessions",
+    totalDate: "View Total by Date",
+    total2Week: "Total by 2-Week Period",
+    export: "Export 2-Week PDF",
+    salaryMonth: "Total Salary by Month",
+    total: "Total Commission",
+    deleteConfirm: "Delete this session?",
+    noData: "No sessions found"
+  },
+  bm: {
+    subtitle: "Kiraan Komisen",
+    add: "Tambah Sesi",
+    sessions: "Senarai Sesi",
+    totalDate: "Jumlah Mengikut Tarikh",
+    total2Week: "Jumlah 2 Minggu",
+    export: "Eksport PDF 2 Minggu",
+    salaryMonth: "Jumlah Gaji Bulanan",
+    total: "Jumlah Komisen",
+    deleteConfirm: "Padam sesi ini?",
+    noData: "Tiada data dijumpai"
+  }
+};
 
 /* ====== PACKAGES ====== */
 const centerPackages = [
@@ -38,6 +68,12 @@ const homePackages = [
   { label: "120 min / RM280", price: 280 }
 ];
 
+const movmanPackages = [
+  { label: "60 min / RM139", price: 139 },
+  { label: "90 min / RM189", price: 189 },
+  { label: "120 min / RM239", price: 239 }
+];
+
 /* ====== INIT DATES ====== */
 const today = new Date();
 date.valueAsDate = today;
@@ -46,25 +82,37 @@ filterMonth.value = today.toISOString().slice(0,7);
 filterSalaryMonth.value = today.toISOString().slice(0,7);
 filterPeriod.value = today.getDate() <= 14 ? "1" : "2";
 
-/* ====== FUNCTIONS ====== */
+/* ====== PACKAGE LOGIC ====== */
 function populatePackages(){
   packageSelect.innerHTML = "";
-  const packages = serviceType.value === "0.35" ? centerPackages : homePackages;
+
+  let packages = centerPackages;
+
+  if(serviceType.value === "0.35"){
+    packages = centerPackages;
+  } else if(serviceType.value === "0.50"){
+    packages = homePackages;
+  } else if(serviceType.value === "movman"){
+    packages = movmanPackages;
+  }
+
   packages.forEach(p => {
     const opt = document.createElement("option");
     opt.value = p.price;
     opt.textContent = p.label;
     packageSelect.appendChild(opt);
   });
+
   const otherOpt = document.createElement("option");
   otherOpt.value = "other";
   otherOpt.textContent = "Others";
   packageSelect.appendChild(otherOpt);
+
   otherPriceBox.style.display = "none";
 }
 
 function packageChange(){
-  otherPriceBox.style.display = packageSelect.value==="other"?"block":"none";
+  otherPriceBox.style.display = packageSelect.value === "other" ? "block" : "none";
 }
 
 serviceType.addEventListener("change", populatePackages);
@@ -72,11 +120,20 @@ packageSelect.addEventListener("change", packageChange);
 
 /* ====== ADD SESSION ====== */
 function addCommission(){
-  let price = packageSelect.value==="other"? Number(otherPrice.value) : Number(packageSelect.value);
-  const rate = Number(serviceType.value);
+  const price = packageSelect.value === "other"
+    ? Number(otherPrice.value)
+    : Number(packageSelect.value);
+
+  const rate = serviceType.value === "movman"
+    ? 0.50
+    : Number(serviceType.value);
+
   const dateVal = date.value;
 
-  if(!price || !dateVal){ alert("Please enter valid data"); return; }
+  if(!price || !dateVal){
+    alert("Please enter valid data");
+    return;
+  }
 
   const commission = price * rate;
 
@@ -125,26 +182,36 @@ function render(){
 /* ====== EDIT / DELETE ====== */
 function editSession(i){
   const s = sessions[i];
-  serviceType.value = s.rate;
+
+  if(s.rate === 0.5 && movmanPackages.some(p => p.price === s.price)){
+    serviceType.value = "movman";
+  } else {
+    serviceType.value = String(s.rate);
+  }
+
   populatePackages();
 
   let matched = false;
   [...packageSelect.options].forEach(o=>{
-    if(Number(o.value)===s.price){ packageSelect.value=o.value; matched=true; }
+    if(Number(o.value) === s.price){
+      packageSelect.value = o.value;
+      matched = true;
+    }
   });
 
   if(!matched){
-    packageSelect.value="other";
-    otherPriceBox.style.display="block";
+    packageSelect.value = "other";
+    otherPriceBox.style.display = "block";
     otherPrice.value = s.price;
   }
 
   date.value = s.date;
-  editIndex=i;
+  editIndex = i;
 }
 
 function deleteSession(i){
-  if(confirm("Delete this session?")){
+  const t = translations[languageSelect.value];
+  if(confirm(t.deleteConfirm)){
     sessions.splice(i,1);
     localStorage.setItem("sessions", JSON.stringify(sessions));
     render();
@@ -154,16 +221,22 @@ function deleteSession(i){
 /* ====== TOTALS ====== */
 function updateTotalByDate(){
   const d = filterDate.value;
-  totalByDate.textContent = sessions.filter(s=>s.date===d).reduce((a,b)=>a+b.commission,0).toFixed(2);
+  totalByDate.textContent = sessions
+    .filter(s => s.date === d)
+    .reduce((a,b) => a + b.commission, 0)
+    .toFixed(2);
 }
 
 function updateTotalByPeriod(){
   const [y,m] = filterMonth.value.split("-").map(Number);
   const p = filterPeriod.value;
+
   totalByPeriod.textContent = sessions.filter(s=>{
     const d = new Date(s.date);
     const day = d.getDate();
-    return d.getFullYear()===y && d.getMonth()+1===m && (p==="1"? day<=14 : day>=15);
+    return d.getFullYear()===y &&
+           d.getMonth()+1===m &&
+           (p==="1" ? day<=14 : day>=15);
   }).reduce((a,b)=>a+b.commission,0).toFixed(2);
 }
 
@@ -180,69 +253,68 @@ filterMonth.onchange = updateTotalByPeriod;
 filterPeriod.onchange = updateTotalByPeriod;
 filterSalaryMonth.onchange = updateTotalSalaryByMonth;
 
-/* ====== EXPORT PDF 2-WEEK ====== */
+/* ====== EXPORT PDF ====== */
 function getSessionsBy2Week(){
-  const month = filterMonth.value;
+  const [year, mon] = filterMonth.value.split("-").map(Number);
   const period = filterPeriod.value;
-  if(!month) return [];
-  const [year, mon] = month.split("-").map(Number);
 
   return sessions.filter(s=>{
     const d = new Date(s.date);
     const day = d.getDate();
-    return d.getFullYear()===year && d.getMonth()+1===mon && (period==="1"? day<=14 : day>=15);
+    return d.getFullYear()===year &&
+           d.getMonth()+1===mon &&
+           (period==="1" ? day<=14 : day>=15);
   });
 }
 
 function export2WeekPDF(){
   const data = getSessionsBy2Week();
-  if(data.length === 0){ 
-    alert("No sessions found for selected period"); 
-    return; 
+  if(!data.length){
+    alert(translations[languageSelect.value].noData);
+    return;
   }
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  // Header
   doc.setFontSize(18);
   doc.text("TeMan Wellness", 14, 20);
   doc.setFontSize(12);
   doc.text("2-Week Salary Report", 14, 28);
-  doc.text(`Period: ${filterMonth.value} - ${filterPeriod.value === "1" ? "1–14" : "15–End"}`, 14, 34);
 
-  // Prepare table data
-  const tableData = data.map((s, i) => [
-    i + 1,
+  const rows = data.map((s,i)=>[
+    i+1,
     s.date,
     `RM ${s.price.toFixed(2)}`,
     `${(s.rate*100).toFixed(0)}%`,
     `RM ${s.commission.toFixed(2)}`
   ]);
 
-  // Add table
   doc.autoTable({
-    startY: 40,
-    head: [["No", "Date", "Price Paid", "Rate", "Commission"]],
-    body: tableData,
-    styles: { fontSize: 10, cellPadding: 3 },
-    headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-    alternateRowStyles: { fillColor: [245, 245, 245] },
-    margin: { left: 14, right: 14 },
+    startY: 36,
+    head: [["No", "Date", "Price", "Rate", "Commission"]],
+    body: rows
   });
 
-  // Total
-  const total = data.reduce((sum, s) => sum + s.commission, 0);
-  const finalY = doc.lastAutoTable.finalY || 40;
-  doc.setFontSize(12);
-  doc.text(`TOTAL COMMISSION: RM ${total.toFixed(2)}`, 14, finalY + 10);
-
-  // Save PDF
   doc.save("TeMan_2Week_Salary.pdf");
 }
 
+/* ====== LANGUAGE ====== */
+function applyLanguage(lang){
+  const t = translations[lang];
+  document.querySelector(".subtitle").textContent = t.subtitle;
+  document.querySelector("button").textContent = t.add;
+  document.querySelector("h3").textContent = "📋 " + t.sessions;
+  document.querySelectorAll(".card.total h2")[0].textContent = t.totalDate;
+  document.querySelectorAll(".card.total h2")[1].textContent = t.total2Week;
+  document.querySelector(".export-btn").textContent = t.export;
+  document.querySelectorAll(".card.total h2")[2].textContent = t.salaryMonth;
+  document.querySelectorAll(".card.total h2")[3].textContent = t.total;
+}
 
+languageSelect.onchange = () => applyLanguage(languageSelect.value);
 
 /* ====== INITIALIZE ====== */
 populatePackages();
 render();
+applyLanguage("en");
