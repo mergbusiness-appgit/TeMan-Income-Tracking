@@ -1,31 +1,159 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f5f6f8; color: #222; line-height: 1.5; }
-h1 { text-align: center; margin-bottom: 4px; font-size: 28px; color: #111; }
-.subtitle { text-align: center; margin-bottom: 20px; font-size: 16px; color: #666; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-.app { max-width: 520px; margin: 20px auto; padding: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f7f9fc;
+  color: #222;
+  line-height: 1.5;
+}
 
-.card { background: #fff; padding: 18px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); transition: transform 0.2s ease; }
-.card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.1); }
+.app {
+  max-width: 480px;
+  margin: 20px auto;
+  padding: 16px;
+}
 
-label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 12px; opacity: 0.8; }
-input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 14px; }
-button { width: 100%; padding: 14px; margin-top: 8px; background: #FFB500; color: #111; border: none; border-radius: 12px; font-size: 16px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
-button:hover { opacity: 0.9; }
-.export-btn { background: #222; color: #fff; }
+h1 {
+  text-align: center;
+  margin-bottom: 4px;
+  font-size: 30px;
+  color: #111;
+}
 
-ul { list-style: none; max-height: 300px; overflow-y: auto; padding-right: 4px; }
-.session-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; }
-.session-date { font-size: 12px; color: #888; white-space: nowrap; }
-.session-row button { width: auto; padding: 6px 8px; background: #eee; border-radius: 8px; font-size: 12px; cursor: pointer; margin-left: 6px; }
-.session-row button:hover { background: #ddd; }
+.subtitle {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #666;
+}
 
-.card.total { text-align: center; }
-.card.total h2 { font-size: 14px; margin-bottom: 6px; }
-.card.total span, .card.total p { font-size: 20px; font-weight: bold; }
+/* CARD */
+.card {
+  background: #fff;
+  padding: 18px;
+  border-radius: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  transition: transform 0.2s ease;
+}
 
+.card:hover {
+  transform: translateY(-2px);
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  background: #FFB500;
+  color: #111;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.export-btn {
+  background: #00aaff;
+  color: #fff;
+}
+
+/* TOTAL CARDS */
+.card.total {
+  text-align: center;
+}
+
+.card.total h2 {
+  margin-bottom: 8px;
+}
+
+.card.total p {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+/* SESSION LIST */
+ul {
+  list-style: none;
+  padding: 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+li {
+  font-size: 14px;
+}
+
+.session-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px dashed #ddd;
+}
+
+.session-row div:last-child {
+  display: flex;
+  gap: 6px;
+}
+
+.session-row button {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  background: #555;
+  color: #fff;
+  transition: all 0.2s ease;
+}
+
+.session-row button:hover {
+  opacity: 0.8;
+}
+
+.session-date {
+  font-size: 12px;
+  color: #888;
+  white-space: nowrap;
+}
+
+/* MOBILE */
 @media (max-width: 420px) {
-  .session-row { flex-direction: column; align-items: flex-start; gap: 6px; }
-  .session-row div:last-child { display: flex; gap: 6px; }
-  input, select, button { font-size: 14px; }
+  .session-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .session-row div:last-child {
+    justify-content: flex-start;
+  }
 }
