@@ -54,8 +54,17 @@ const translations = {
 const centerPackages = [
   { label: "60 min / RM150", price: 150 },
   { label: "90 min / RM210", price: 210 },
-  { label: "120 min / RM250", price: 250 }
+  { label: "120 min / RM250", price: 250 },
+
+  { label: "60 + 30 / RM220", price: 220 },
+  { label: "90 + 30 / RM260", price: 260 },
+  { label: "120 + 30 / RM300", price: 300 },
+
+  { label: "60 + 30 + 30 / RM280", price: 280 },
+  { label: "90 + 30 + 30 / RM320", price: 320 },
+  { label: "120 + 30 + 30 / RM360", price: 360 }
 ];
+
 
 const homePackages = [
   { label: "60 min / RM150", price: 150 },
